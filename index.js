@@ -12,25 +12,31 @@ const { error } = require('console');
 
 
 const server = http.createServer((req,res)=>{
-    if(req.url==='/'){
-        fs.readFile(path.join(__dirname,'public','index.html'), (err,content)=> {
+        let filePath = path.join(
+            __dirname,
+            'public',
+            req.url==='/'? 'index.html':req.url
+        );
+        let extt = path.extname(filePath);
+        let contentType = 'text/html';
+        switch(extt){
+            case '.js':
+                contentType = 'text/html';
+                break;
+            case '.css':
+                contentType = 'text/css';
+                break;
+            case '.json':
+                contentType = 'application/josn';
+                break;                    
+        } 
+        fs.readFile(filePath, (err,content)=> {
             if(err) throw err;
-
-            res.writeHead(200,{'Content-Type': 'text/html'});
-            res.end(content); 
-        })
-       
-    }
-
-    if(req.url==='/about'){
-        fs.readFile(path.join(__dirname,'public','about.html'),(err,content)=>{
-            if(err) throw err;
-            res.writeHead(200,{'Content-Type':'text/html'});
+            
+            res.writeHead(200,{'Content-Type':contentType});
             res.end(content);
         })
-    }
-
-
+    
 });
 
 const PORT = process.env.PORT || 5000;
